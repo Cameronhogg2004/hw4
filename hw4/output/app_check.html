@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Customs — Live App Check (Homework 4)</title>
+<style>
+  :root { --ink:#1a1530; --soft:#5a5475; --line:#e3def3; --accent:#6a1fd1; --gold:#e0a800; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:#f6f4fc; line-height:1.55; }
+  header { background:linear-gradient(90deg,#00356b,#35188a); color:#fff; padding:2rem clamp(1rem,5vw,3rem); }
+  header h1 { margin:0 0 .3rem; font-size:2rem; }
+  header p { margin:0; opacity:.9; }
+  main { max-width:1000px; margin:0 auto; padding:1.5rem clamp(1rem,4vw,2rem) 4rem; }
+  nav.toc { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1rem 1.25rem; margin-bottom:2rem; }
+  nav.toc ol { margin:.4rem 0 0; padding-left:1.2rem; }
+  section { background:#fff; border:1px solid var(--line); border-radius:14px; padding:1.5rem; margin-bottom:2rem; box-shadow:0 2px 10px rgb(30 10 80 / 6%); }
+  h2 { margin:0 0 .25rem; font-size:1.35rem; }
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#fff; background:var(--accent); padding:.15rem .6rem; border-radius:999px; margin-bottom:.6rem; }
+  .tag.req { background:#0b7a3e; }
+  figure { margin:1rem 0 0; }
+  figure img { width:100%; border-radius:10px; border:1px solid var(--line); display:block; }
+  figcaption { margin-top:.6rem; color:var(--soft); font-size:.95rem; }
+  .facts { margin:.8rem 0 0; padding:.75rem 1rem; background:#f3f0fb; border-left:4px solid var(--gold); border-radius:6px; font-size:.92rem; }
+  .facts code { background:#fff; padding:0 .3rem; border-radius:4px; }
+  footer { text-align:center; color:var(--soft); font-size:.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Campus Customs — Live App Check</h1>
+  <p>Homework 4 · Problem 11 · Screenshots taken from the running app (React + Vite on :5173, FastAPI + PydanticAI agent on :8000).</p>
+</header>
+<main>
+  <nav class="toc">
+    <strong>Checks</strong>
+    <ol>
+      <li><a href="#inventory">Chat checks the inventory level of an item (stock + price from the database)</a></li>
+      <li><a href="#search">Dynamic search-result cards after a category question</a></li>
+      <li><a href="#usability">Usability feature from Problem 9: Item Shop filters</a></li>
+      <li><a href="#alternatives">Bonus: Problem 9 "find alternatives" tool + quick replies</a></li>
+      <li><a href="#design">Bonus: Problem 10 storefront design</a></li>
+    </ol>
+  </nav>
+
+  <section id="inventory">
+    <span class="tag req">Required check 1</span>
+    <h2>1. Chat checks the inventory level of an item</h2>
+    <figure>
+      <img src="app_check_images/inventory.png" alt="Chat answering that the 2025 Yale vs Harvard T-shirt has 2 left in size L at $32.00, next to the product page">
+      <figcaption>On the 2025 Yale vs Harvard T-shirt page, the shopper asks "How many of this tee are left in size L, and what does it cost?" The agent knows which item "this tee" means from the page context. It calls its stock tool and answers <strong>2 left in L, $32.00</strong>, which matches the "L · 2 left" size meter on the page.</figcaption>
+    </figure>
+    <p class="facts">Database check: <code>inventory</code> row (2025-yale-vs-harvard-t-shirt, L) → quantity <code>2</code>; <code>catalogue.price</code> → <code>32.0</code>. A price fact-checker rejects any dollar amount in a reply that didn't come from a tool result.</p>
+  </section>
+
+  <section id="search">
+    <span class="tag req">Required check 2</span>
+    <h2>2. Dynamic search-result cards after a category question</h2>
+    <figure>
+      <img src="app_check_images/search_cards.png" alt="Llama's picks section with 27 hoodie product cards on the page, and the chat reply with mini cards">
+      <figcaption>The shopper asks "What hoodies do you have?" The agent searches the catalogue and returns product IDs. The backend turns those IDs into cards from the database, and the page shows a <strong>"Llama's picks · 27 items"</strong> shelf with image, name, price and short info. Each card opens the full product page when clicked.</figcaption>
+    </figure>
+    <p class="facts">The count (27) and the price range ($45.00–$88.00) are calculated by the <code>search_catalogue</code> tool, not by the model.</p>
+  </section>
+
+  <section id="usability">
+    <span class="tag req">Required check 3</span>
+    <h2>3. Usability feature: Item Shop filters (category · size · in stock · sort)</h2>
+    <figure>
+      <img src="app_check_images/usability_filters.png" alt="Item Shop with Hoodies tab, size M, In stock only and Price low to high selected, showing 21 of 102">
+      <figcaption>The new filter bar narrows 102 items to <strong>21 hoodies in stock in size M</strong>, sorted by price, in two clicks. Each category tab shows a live count, and the filters are saved in the URL (<code>/products?cat=hoodies&amp;size=M&amp;stock=1&amp;sort=price-asc</code>), so this view can be shared or bookmarked.</figcaption>
+    </figure>
+    <p class="facts">Database check: 21 hoodies have <code>quantity &gt; 0</code> in size M, the same number the page shows.</p>
+  </section>
+
+  <section id="alternatives">
+    <span class="tag">Bonus</span>
+    <h2>4. "Find alternatives" tool + context-aware quick replies</h2>
+    <figure>
+      <img src="app_check_images/usability_alternatives.png" alt="Chat saying the Baseball Left Chest Crewneck is out of stock in XS and showing six in-stock alternative crewnecks as cards">
+      <figcaption>On the Baseball Left Chest Crewneck page, "Do you have this in XS?" gets a clear <strong>out of stock in XS</strong>, plus the sizes that are still available. The new <code>find_alternatives</code> tool then puts six similar crewnecks that <em>do</em> come in XS on the page. Quick-reply chips under the chat ("Is this in stock in M?", "What colors does it come in?") change with the page.</figcaption>
+    </figure>
+  </section>
+
+  <section id="design">
+    <span class="tag">Bonus</span>
+    <h2>5. Storefront design (Problem 10)</h2>
+    <figure>
+      <img src="app_check_images/design_home.png" alt="Home page hero with Battle Bus, loot llama on a pedestal, storm ring, countdown and chat nudge">
+      <figcaption>The Fortnite-style item shop in Yale blue: a scrolling announcement ticker, a CSS Battle Bus and loot llama, a daily-drops countdown, a trust strip, and the hopping llama chat button with its "Need your size? Ask me!" nudge. Everything is drawn in HTML/CSS.</figcaption>
+    </figure>
+  </section>
+
+  <footer>Screenshots: output/app_check_images/ · Agent activity for these runs is logged in output/audit_trail.json</footer>
+</main>
+</body>
+</html>

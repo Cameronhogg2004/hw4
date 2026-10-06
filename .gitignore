@@ -1,0 +1,21 @@
+# Only the packaged hw4/ folder is published.
+/*
+!/.gitignore
+!/hw4/
+
+# Secrets: never commit real env files; the placeholder template is allowed.
+.env
+.env.*
+!.env.example
+
+# Course data stays local (not redistributed): database and product photos.
+hw4/data/*
+!hw4/data/README.md
+
+# Build and environment artifacts
+hw4/.venv/
+hw4/frontend/node_modules/
+hw4/frontend/dist/
+**/__pycache__/
+**/*.pyc
+**/.DS_Store
